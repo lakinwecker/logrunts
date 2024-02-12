@@ -18,8 +18,9 @@ and turns it into:
 INFO  analysis-worker/development@1.0 > 00000000000000000001234567890000 > Starting 4 workers
 ```
 
+![Example output](./imgs/example.png?raw=true)
 
 Intended to be used like:
 ```bash
-go run cmds/worker.go | tee log.txt | RUST_LOG=trace logrunts
+go run cmds/worker.go | RUST_LOG=trace logrunts
 ```
