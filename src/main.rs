@@ -45,7 +45,7 @@ fn main() {
         }
         let msg: LogMsg = serde_json::from_str(&line).expect("Unable to parse json value");
         let target = format!("{}/{}@{}", msg.name, msg.environment, msg.version);
-        let formatted_msg = if msg.trace_id == "00000000000000000000000100000000" {
+        let formatted_msg = if msg.trace_id == "00000000000000000000000000000000" {
             format!("{}", msg.msg)
         } else {
             format!("{} > {}", msg.trace_id, msg.msg)
