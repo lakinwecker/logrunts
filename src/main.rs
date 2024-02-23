@@ -27,6 +27,23 @@ struct LogMsg {
     trace_id: String,
 }
 
+fn handle_log_msg(msg: LogMsg) {
+    let target = format!("{}/{}@{}", msg.name, msg.environment, msg.version);
+    let formatted_msg = if msg.trace_id == "00000000000000000000000000000000" {
+        format!("{}", msg.msg)
+    } else {
+        format!("{} > {}", msg.trace_id, msg.msg)
+    };
+
+    match msg.level {
+        Level::Trace => trace!(target: &target[..], "{}", formatted_msg),
+        Level::Debug => debug!(target: &target[..], "{}", formatted_msg),
+        Level::Info => info!(target: &target[..], "{}", formatted_msg),
+        Level::Warn => warn!(target: &target[..], "{}", formatted_msg),
+        Level::Error => error!(target: &target[..], "{}", formatted_msg),
+    }
+}
+
 // {
 // "environment":"development",
 // "level":"info",
@@ -43,20 +60,9 @@ fn main() {
         if line.len() == 0 {
             continue;
         }
-        let msg: LogMsg = serde_json::from_str(&line).expect("Unable to parse json value");
-        let target = format!("{}/{}@{}", msg.name, msg.environment, msg.version);
-        let formatted_msg = if msg.trace_id == "00000000000000000000000000000000" {
-            format!("{}", msg.msg)
-        } else {
-            format!("{} > {}", msg.trace_id, msg.msg)
-        };
-
-        match msg.level {
-            Level::Trace => trace!(target: &target[..], "{}", formatted_msg),
-            Level::Debug => debug!(target: &target[..], "{}", formatted_msg),
-            Level::Info => info!(target: &target[..], "{}", formatted_msg),
-            Level::Warn => warn!(target: &target[..], "{}", formatted_msg),
-            Level::Error => error!(target: &target[..], "{}", formatted_msg),
+        match serde_json::from_str(&line) {
+            Ok(msg) => handle_log_msg(msg),
+            Err(_) => println!("{}", line),
         }
     }
 }
